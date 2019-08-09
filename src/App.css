@@ -1,5 +1,6 @@
 .App {
   text-align: center;
+  margin-top: 50px;
 }
 
 .App-logo {
@@ -21,4 +22,25 @@
 @keyframes App-logo-spin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
+}
+.MuiFormControl-root.MuiTextField-root.MuiFormControl-marginNormal {
+  width: 90%;
+}
+.MuiTypography-h4.MuiTypography-gutterBottom {
+  text-align: left;
+}
+.form-birth,.form-document{
+  display: inline-flex;
+}
+.form-gender {
+  margin: 20px;
+  text-align: left
+}
+#datos-personales{
+  text-align: left;
+  margin: 20px;
+}
+.birthday-container {
+  display: flex;
+  justify-content: space-between;
 }
