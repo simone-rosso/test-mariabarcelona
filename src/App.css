@@ -43,4 +43,13 @@
 .birthday-container {
   display: flex;
   justify-content: space-between;
+  width: 90%;
+  margin-left: auto;
+}
+.date-fields > div {
+  width: 90%;
+}
+.form-birth > label, .form-document > label{
+  margin-left:40px;
+  margin-top:30px
 }
