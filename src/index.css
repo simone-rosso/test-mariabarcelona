@@ -3,3 +3,28 @@ body {
   padding: 0;
   font-family: sans-serif;
 }
+
+button{
+  float:right;
+}
+.col-md-12.button-column {
+  margin-top: 30px;
+  padding-bottom: 10px;
+  border-bottom:1px solid #cacaca;
+  margin-bottom: 50px;
+}
+.buttons-row{
+  padding:0 35px;
+  clear: both;
+}
+.title{
+  margin-top: 50px;
+  text-align: left;
+  padding: 0 20px;
+}
+.row.fifth-row {
+  margin-top: 40px;
+}
+.birthday-container input, .document-type input {
+  text-align: center;
+}

@@ -20,36 +20,86 @@
 }
 
 @keyframes App-logo-spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
-.MuiFormControl-root.MuiTextField-root.MuiFormControl-marginNormal {
-  width: 90%;
-}
+
 .MuiTypography-h4.MuiTypography-gutterBottom {
   text-align: left;
 }
-.form-birth,.form-document{
-  display: inline-flex;
-}
+
 .form-gender {
   margin: 20px;
   text-align: left
 }
-#datos-personales{
-  text-align: left;
-  margin: 20px;
-}
+
 .birthday-container {
   display: flex;
   justify-content: space-between;
   width: 90%;
   margin-left: auto;
 }
-.date-fields > div {
+
+.date-fields>div {
   width: 90%;
 }
-.form-birth > label, .form-document > label{
-  margin-left:40px;
-  margin-top:30px
+
+.document-type>div {
+  width: 100%
+}
+
+.document-container {
+  display: inline-flex
+}
+
+.col-sm-6>div {
+  width: 90%
+}
+
+.birthday-container>div {
+  width: 33%
+}
+
+.first-row {
+  margin-top: 40px;
+}
+
+.second-row {
+  text-align: left;
+  margin-top: 30px;
+}
+
+.MuiFormControl-marginNormal {
+  margin-top: 0px !important;
+}
+
+.row.birthday-container {
+  margin-left: 23px;
+  width: 93%;
+  float: left;
+}
+
+.row.document-container {
+  margin-left: 11px;
+  width: 97%;
+  float: left;
+}
+
+h3, h4, label {
+  color: #3D4451
+}
+
+.form-birth>label, .form-document>label {
+  margin-left: 23px;
+}
+.id-row{
+  margin-top:30px;
+}
+.id-row > div{
+  margin-left: 35px;
+  float:left;
 }

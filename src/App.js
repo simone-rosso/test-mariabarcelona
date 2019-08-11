@@ -2,22 +2,25 @@ import React, { Component } from 'react';
 import Container from '@material-ui/core/Container';
 import TextField from '@material-ui/core/TextField';
 import './App.css';
-import { Button, MenuItem, Select, OutlinedInput } from '@material-ui/core';
+import { Button, MenuItem, Select, OutlinedInput, Zoom } from '@material-ui/core';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormControl from '@material-ui/core/FormControl';
 import FormLabel from '@material-ui/core/FormLabel';
+import Icon from '@material-ui/core/Icon';
+import Tooltip from '@material-ui/core/Tooltip';
+
 
 const defaultInfos = {
   name: "",
   surname: "",
   gender: "",
-  id: undefined,
-  document_type: "none",
+  document_type: "",
   identification: undefined,
   email: "",
-  password: ""
+  password: "",
+  id: ""
 }
 
 class App extends Component {
@@ -25,13 +28,17 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      infos: defaultInfos
+      infos: defaultInfos,
+      repeatEmail: "",
+      repeatPassword: ""
     };
 
     this.handleChange = this.handleChange.bind(this);
-    this.sendInfo = this.sendInfo.bind(this);
-    this.apiCall = this.apiCall.bind(this);
-    this.handleRadioCheck = this.handleRadioCheck.bind(this);
+    this.handleChangeExtra = this.handleChangeExtra.bind(this);
+    this.createUser = this.createUser.bind(this);
+    this.getUser = this.getUser.bind(this);
+    this.updateUser = this.updateUser.bind(this);
+
   }
 
   handleChange(event, field) {
@@ -42,35 +49,58 @@ class App extends Component {
     this.setState({ infos: auxInfo })
   }
 
-  handleRadioCheck(event) {
-    this.setState({ gender: event.target.value });
+  handleChangeExtra(event, field) {
+    var newValue = event.target.value;
+    field === "repeat-email" ? this.setState({ repeatEmail: newValue }) : this.setState({ repeatPassword: newValue })
   }
 
-  sendInfo() {
+  createUser(data) {
     fetch("https://my-json-server.typicode.com/volkz/technical-form/users", {
       method: 'POST',
-      body: this.state.infos,
-      type: JSON
-    }).then((result)=> console.log(result));
+      mode: 'CORS',
+      body: JSON.stringify(data),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }).then(res => {
+      return res;
+    }).catch(err => err);
   }
 
-  apiCall() {
-    fetch("https://my-json-server.typicode.com/volkz/technical-form/users")
+  getUser() {
+    fetch("https://my-json-server.typicode.com/volkz/technical-form/users/" + this.state.infos.id)
       .then(res => res.json())
       .then(
         (result) => {
-          this.setState({infos:result[0]})
-        },
-        // Note: it's important to handle errors here
-        // instead of a catch() block so that we don't swallow
-        // exceptions from actual bugs in components.
-        (error) => {
-          this.setState({
-            isLoaded: true,
-            error
-          });
+          this.setState({ infos: result })
         }
+      ).catch(
+        this.setState({
+          infos: {
+            name: "",
+            surname: "",
+            gender: "",
+            document_type: "",
+            identification: undefined,
+            email: "",
+            password: ""
+          },
+          isLoaded: true
+        })
       )
+  }
+
+  updateUser(id, data) {
+    fetch("https://my-json-server.typicode.com/volkz/technical-form/users/" + this.state.infos.id, {
+      method: 'PUT',
+      mode: 'CORS',
+      body: JSON.stringify(data),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }).then(res => {
+      return res;
+    }).catch(err => err);
   }
 
   render() {
@@ -78,8 +108,11 @@ class App extends Component {
       <div className="App">
         <Container maxWidth="md">
           <div className="container">
-            <h3 id="datos-personales">Tus datos personales</h3>
-            <div className="row">
+            <div className="title">
+              <h3 id="datos-personales">Tus datos personales</h3>
+            </div>
+
+            <div className="row first-row">
               <div className="col-sm-6 form-name">
                 <TextField
                   id="outlined-name"
@@ -100,11 +133,12 @@ class App extends Component {
                   variant="outlined"
                 />
               </div>
+            </div>
 
-
-              <div className="row col-sm-6 form-birth">
+            <div className="row second-row">
+              <div className="col-sm-6 form-birth">
                 <label>Fecha de nacimiento</label>
-                <div className="birthday-container">
+                <div className="row birthday-container">
                   <TextField
                     id="outlined-date-day"
                     className="date-fields"
@@ -129,23 +163,21 @@ class App extends Component {
                 </div>
               </div>
 
-              <div className="row col-sm-6 form-document">
-                <label>Documento</label>
-                <div className="birthday-container">
-
-                  <FormControl variant="outlined" >
-                    <Select
-                      value={this.state.infos.document_type}
-                      onChange={(e) => this.handleChange(e, "document_type")}
-                      input={<OutlinedInput />}>
-                      <MenuItem value="none">
-                      </MenuItem>
-                      <MenuItem value="DNI">DNI</MenuItem>
-                      <MenuItem value="NIE">NIE</MenuItem>
-                      <MenuItem value="PASSPORT">PASSPORT</MenuItem>
-                    </Select>
-                  </FormControl>
-
+              <div className="col-sm-6 form-document">
+                <label>Documento identificativo</label>
+                <div className="row document-container">
+                  <div className="col-sm-5 document-type">
+                    <FormControl variant="outlined" >
+                      <Select
+                        value={this.state.infos.document_type}
+                        onChange={(e) => this.handleChange(e, "document_type")}
+                        input={<OutlinedInput />}>
+                        <MenuItem value="DNI">DNI</MenuItem>
+                        <MenuItem value="NIE">NIE</MenuItem>
+                        <MenuItem value="PASSPORT">PASSPORT</MenuItem>
+                      </Select>
+                    </FormControl>
+                  </div>
                   <div className="col-sm-7 document-number">
                     <TextField
                       id="outlined-document-number"
@@ -157,32 +189,40 @@ class App extends Component {
                   </div>
                 </div>
               </div>
+            </div>
 
+            <div className="row third-row">
               <div className="col-sm-12 form-gender">
                 <FormControl component="fieldset">
                   <FormLabel component="legend">Genero</FormLabel>
-                  <RadioGroup aria-label="position" name="position" value={this.state.gender} onChange={this.handleRadioCheck} row>
+                  <RadioGroup aria-label="position" name="position" row>
                     <FormControlLabel
-                      value="a"
+                      value="Mujer"
                       control={<Radio color="primary" />}
                       label="Mujer"
                       labelPlacement="end"
+                      onChange={(e) => this.handleChange(e, "gender")}
                     />
                     <FormControlLabel
-                      value="b"
+                      value="Hombre"
                       control={<Radio color="primary" />}
                       label="Hombre"
                       labelPlacement="end"
+                      onChange={(e) => this.handleChange(e, "gender")}
                     />
                     <FormControlLabel
-                      value="c"
+                      value="Prefiero no contestar"
                       control={<Radio color="primary" />}
                       label="Prefiero no contestar"
                       labelPlacement="end"
+                      onChange={(e) => this.handleChange(e, "gender")}
                     />
                   </RadioGroup>
                 </FormControl>
               </div>
+            </div>
+
+            <div className="row fourth-row">
               <div className="col-sm-6 form-email">
                 <TextField
                   id="outlined-email"
@@ -196,19 +236,90 @@ class App extends Component {
               <div className="col-sm-6 form-repeat-email">
                 <TextField
                   id="outlined-repeat-email"
-                  label="Repeat e-mail"
-                  value={this.state.infos.email}
-                  onChange={(e) => this.handleChange(e, "email")}
+                  label="Repetir e-mail"
+                  value={this.state.repeatEmail}
+                  onChange={(e) => this.handleChangeExtra(e, "repeat-email")}
                   margin="normal"
                   variant="outlined"
                 />
               </div>
             </div>
+
+            <div className="row buttons-row">
+              <div className="col-md-12 button-column">
+                <Button color="primary" onClick={this.createUser(this.state.infos)}>Crea usuario</Button>
+              </div>
+            </div>
+
+            <div className="title">
+              <h4 id="change-password-title">Contraseña</h4>
+              <Tooltip
+                TransitionComponent={Zoom}
+                title="Para modificar la contraseña inserir un ID correcto">
+                <Icon>info</Icon>
+              </Tooltip>
+            </div>
+            <div className="row fifth-row">
+              <div className="col-sm-6 form-password">
+                <TextField
+                  id="outlined-password"
+                  label="Contraseña"
+                  type="password"
+                  value={this.state.infos.password}
+                  onChange={(e) => this.handleChange(e, "password")}
+                  margin="normal"
+                  variant="outlined"
+                />
+              </div>
+              <div className="col-sm-6 form-repeat-password">
+                <TextField
+                  id="outlined-repeat-password"
+                  label="Repetir contraseña"
+                  type="password"
+                  value={this.state.repeatPassword}
+                  onChange={(e) => this.handleChangeExtra(e, "repeat-password")}
+                  margin="normal"
+                  variant="outlined"
+                />
+              </div>
+            </div>
+
+            <div className="row buttons-row">
+              <div className="col-md-12 button-column">
+                <Button
+                  color="primary"
+                  onClick={this.updateUser(this.state.infos.id, this.state.infos)}
+                  disabled={this.state.infos.id === ""}>
+                  Cambiar tu contraseña
+                  </Button>
+              </div>
+            </div>
+
+
+
+            <div className="title">
+              <h4 id="change-password-title">Busca por ID:</h4>
+            </div>
+            <div className="row id-row">
+              <div className="col-xs-12">
+                <TextField
+                  id="outlined-id"
+                  label="ID"
+                  value={this.state.infos.id}
+                  onChange={(e) => this.handleChange(e, "id")}
+                  margin="normal"
+                  variant="outlined"
+                />
+              </div>
+            </div>
+            <div className="row buttons-row">
+              <div className="col-md-12 button-column">
+                <Button color="default" onClick={this.apiCall}>Buscar por ID</Button>
+              </div>
+            </div>
+
+
           </div>
-
-
-          <Button variant="contained" color="primary" onClick={this.sendInfo}> Send</Button>
-          <Button variant="contained" color="primary" onClick={this.apiCall}>Call</Button>
         </Container>
       </div >
     );
