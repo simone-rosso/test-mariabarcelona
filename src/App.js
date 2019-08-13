@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, useEffect, useState } from 'react';
 import Container from '@material-ui/core/Container';
 import TextField from '@material-ui/core/TextField';
 import './App.css';
@@ -39,6 +39,7 @@ class App extends Component {
     this.createUser = this.createUser.bind(this);
     this.getUser = this.getUser.bind(this);
     this.updateUser = this.updateUser.bind(this);
+    this.handleUpdateUser = this.handleUpdateUser.bind(this);
 
   }
 
@@ -52,22 +53,20 @@ class App extends Component {
 
   handleChangeExtra(event, field) {
     var newValue = event.target.value;
-    field === "repeat-email" ? 
-      this.setState({ repeatEmail: newValue }) : 
+    field === "repeat-email" ?
+      this.setState({ repeatEmail: newValue }) :
       this.setState({ repeatPassword: newValue })
   }
 
   createUser(data) {
     fetch(path, {
       method: 'POST',
-      mode: 'CORS',
-      body: JSON.stringify(data),
       headers: {
-        'Content-Type': 'application/json'
-      }
-    }).then(res => {
-      return res;
-    }).catch(err => err);
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data)
+    }).then((res) => res.json()).then((result) => alert("Created user with these fields" + JSON.stringify(result)))
   }
 
   getUser(id) {
@@ -93,17 +92,24 @@ class App extends Component {
       )
   }
 
+  handleUpdateUser(id, data) {
+    if (id === undefined || id === null) {
+      return alert("Insert ID")
+    }
+    this.updateUser(id, data);
+  }
+
   updateUser(id, data) {
     fetch(path + id, {
       method: 'PUT',
-      mode: 'CORS',
       body: JSON.stringify(data),
       headers: {
+        'Accept': 'application/json',
         'Content-Type': 'application/json'
       }
-    }).then(res => {
-      return res;
-    }).catch(err => err);
+    }).then((res) => res.json())
+      .then((result) => alert("Updated user " + id + " with new fields: " + JSON.stringify(result)))
+      .catch(err => err);
   }
 
   render() {
@@ -256,7 +262,7 @@ class App extends Component {
 
             <div className="row buttons-row">
               <div className="col-md-12 button-column">
-                <Button color="primary" onClick={this.createUser(this.state.infos)}>Crea usuario</Button>
+                <Button color="primary" onClick={() => this.createUser(this.state.infos)}>Crea usuario</Button>
               </div>
             </div>
 
@@ -297,7 +303,7 @@ class App extends Component {
               <div className="col-md-12 button-column">
                 <Button
                   color="primary"
-                  onClick={this.updateUser(this.state.infos.id, this.state.infos)}
+                  onClick={() => this.handleUpdateUser(this.state.infos.id, this.state.infos)}
                   disabled={this.state.infos.id === ""}>
                   Cambiar tu contraseña
                   </Button>
