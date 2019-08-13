@@ -11,6 +11,7 @@ import FormLabel from '@material-ui/core/FormLabel';
 import Icon from '@material-ui/core/Icon';
 import Tooltip from '@material-ui/core/Tooltip';
 
+const path = "https://my-json-server.typicode.com/volkz/technical-form/users/";
 
 const defaultInfos = {
   name: "",
@@ -51,11 +52,13 @@ class App extends Component {
 
   handleChangeExtra(event, field) {
     var newValue = event.target.value;
-    field === "repeat-email" ? this.setState({ repeatEmail: newValue }) : this.setState({ repeatPassword: newValue })
+    field === "repeat-email" ? 
+      this.setState({ repeatEmail: newValue }) : 
+      this.setState({ repeatPassword: newValue })
   }
 
   createUser(data) {
-    fetch("https://my-json-server.typicode.com/volkz/technical-form/users", {
+    fetch(path, {
       method: 'POST',
       mode: 'CORS',
       body: JSON.stringify(data),
@@ -67,8 +70,8 @@ class App extends Component {
     }).catch(err => err);
   }
 
-  getUser() {
-    fetch("https://my-json-server.typicode.com/volkz/technical-form/users/" + this.state.infos.id)
+  getUser(id) {
+    fetch(path + id)
       .then(res => res.json())
       .then(
         (result) => {
@@ -91,7 +94,7 @@ class App extends Component {
   }
 
   updateUser(id, data) {
-    fetch("https://my-json-server.typicode.com/volkz/technical-form/users/" + this.state.infos.id, {
+    fetch(path + id, {
       method: 'PUT',
       mode: 'CORS',
       body: JSON.stringify(data),
@@ -145,6 +148,8 @@ class App extends Component {
                     type="number"
                     margin="normal"
                     variant="outlined"
+                    min="1"
+                    max="31"
                   />
                   <TextField
                     id="outlined-date-month"
@@ -152,6 +157,8 @@ class App extends Component {
                     type="number"
                     margin="normal"
                     variant="outlined"
+                    max="12"
+                    min="1"
                   />
                   <TextField
                     id="outlined-date-year"
@@ -159,6 +166,8 @@ class App extends Component {
                     type="number"
                     margin="normal"
                     variant="outlined"
+                    max="2019"
+                    min="1900"
                   />
                 </div>
               </div>
@@ -295,8 +304,6 @@ class App extends Component {
               </div>
             </div>
 
-
-
             <div className="title">
               <h4 id="change-password-title">Busca por ID:</h4>
             </div>
@@ -314,10 +321,9 @@ class App extends Component {
             </div>
             <div className="row buttons-row">
               <div className="col-md-12 button-column">
-                <Button color="default" onClick={this.apiCall}>Buscar por ID</Button>
+                <Button color="default" onClick={() => this.getUser(this.state.infos.id)}>Buscar por ID</Button>
               </div>
             </div>
-
 
           </div>
         </Container>
